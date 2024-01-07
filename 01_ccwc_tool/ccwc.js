@@ -20,10 +20,6 @@ function countCharacters(txt) {
 
 const fs = require('fs');
 
-// command: process.argv[1] 
-// option: process.argv[2] 
-// file = option ? argv[3]: argv[2]
-
 let stdInput = "";
 process.stdin.resume();
 process.stdin.setEncoding('utf-8');
