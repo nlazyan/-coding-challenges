@@ -1,6 +1,6 @@
-# Write Your Own wc Tool
+# Solutions to John Crickett's Coding Challenges
 
- This is JavaScript solution to first coding challenge from https://codingchallenges.fyi/
+The challenges are available at https://codingchallenges.fyi/
 
 
 
