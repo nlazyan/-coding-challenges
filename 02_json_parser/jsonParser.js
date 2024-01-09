@@ -5,7 +5,9 @@ var fileContent = "";
 
 if(fileName) {
     fileContent = fs.readFileSync(fileName).toString();
-    if(fileContent === '{}') {
+    let firstChar = fileContent.charAt(0); 
+    let lastChar = fileContent.charAt(fileContent.length - 1); 
+    if(firstChar === '{' && lastChar === '}') {
         console.log("Valid JSON file")
         process.exit(0);
     } else {
