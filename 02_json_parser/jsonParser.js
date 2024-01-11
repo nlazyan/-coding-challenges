@@ -42,8 +42,8 @@ function parseSimpleJSON(fileContent) {
 function parseStringKeyValue(content) {
     let items = content.split(':')
     if(checkForString(items[0]) && checkForString(items[1])) {    
-        let json = "{ " + items[0].split('"')[1] + ": '"
-+ items[1].split('"')[1] + "' }";
+        let json = items[0].split('"')[1] + ": '"
++ items[1].split('"')[1];
         return json;
     } else {
         console.log("Invalid JSON around: ", items);
@@ -54,12 +54,12 @@ function parseStringKeyValue(content) {
 // step 3
 function parseAllTypes(content) {
     let items = content.split(',');
-    let json = "";
+    let json = [];
     for(let item of items) {
         if(parseStringKeyValue(item)) {
-            json += parseStringKeyValue(item);
+            json.push(parseStringKeyValue(item));
         } else if(checkForBool(item)) {
-            json += checkForBool(item);
+            json.push(checkForBool(item));
         }
     }
     if(json) { return json } 
@@ -78,7 +78,7 @@ function checkForString(item) {
 function checkForBool(content) {
    let items = content.split(':')
    if(checkForString(items[0]) && (items[1] == "true" || items[1] == "false")) {
-        let json = "{ " + items[0].split('"')[1] + ": " + items[1] + " }";
+        let json = items[0].split('"')[1] + ": " + items[1];
         console.log("bool ", json)
         return json;
     }
