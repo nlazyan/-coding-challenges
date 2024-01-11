@@ -5,36 +5,82 @@ var fileContent = "";
 
 if(fileName) {
     fileContent = fs.readFileSync(fileName).toString();
-    parseSimpleJSON(fileContent);
+    let json = JSON.parse(fileContent)
+    console.log("json: ", json)
+    parseJSON(fileContent);
 }
 
-function parseSimpleJSON(fileContent) {
+function parseJSON(fileContent) {
     fileContent = fileContent.replaceAll(/\s/g,'');
     let firstChar = fileContent.charAt(0);
     let lastChar = fileContent.charAt(fileContent.length - 1);
-    console.log(firstChar, lastChar)
+    //console.log(firstChar, lastChar)
+    let json = parseSimpleJSON(fileContent);
+    if(json) {
+        console.log("simple JSON", json)
+        process.exit(0);
+    } 
     if(firstChar === '{' && lastChar === '}') {
-        console.log("Valid JSON")
         let jsonContent = fileContent.slice(1, fileContent.length - 1)
-        parseStringKeyValue(jsonContent);
+        json = parseAllTypes(jsonContent); //parseStringKeyValue(jsonContent);
+        console.log("Step2 JSON of string key/value", json)
         process.exit(0);
     }else {
         console.log("Invalid JSON")
         process.exit(0);
     }
 }
+//step 1 
+function parseSimpleJSON(fileContent) {
+   if(fileContent === '{}'){
+    let json = fileContent;
+    return json; 
+   } 
+    return false;
+}
+// step 2
+function parseStringKeyValue(content) {
+    let items = content.split(':')
+    if(checkForString(items[0]) && checkForString(items[1])) {    
+        let json = "{ " + items[0].split('"')[1] + ": '"
++ items[1].split('"')[1] + "' }";
+        return json;
+    } else {
+        console.log("Invalid JSON around: ", items);
+        return;
+    }
+}
 
-function parseStringKeyValue(jsonContent) {
-    let items = jsonContent.split(':')
-    for(item of items) {
-        let firstChar = item.charAt(0);
-        let lastChar = item.charAt(item.length - 1);
-        if(firstChar === '"' && lastChar === '"') {
-            continue;
-        } else {
-            console.log("Invalid JSON around: ", item);
-            return;
+// step 3
+function parseAllTypes(content) {
+    let items = content.split(',');
+    let json = "";
+    for(let item of items) {
+        if(parseStringKeyValue(item)) {
+            json += parseStringKeyValue(item);
+        } else if(checkForBool(item)) {
+            json += checkForBool(item);
         }
     }
-    console.log("Valid JSON object containing string key and value")
-} 
+    if(json) { return json } 
+    return false;
+}
+ // step 3 check functions
+function checkForString(item) {
+    let firstChar = item.charAt(0);
+    let lastChar = item.charAt(item.length - 1);
+    if(firstChar === '"' && lastChar === '"') {
+        return true;
+    }
+    return false;
+}
+
+function checkForBool(content) {
+   let items = content.split(':')
+   if(checkForString(items[0]) && (items[1] == "true" || items[1] == "false")) {
+        let json = "{ " + items[0].split('"')[1] + ": " + items[1] + " }";
+        console.log("bool ", json)
+        return json;
+    }
+    return false;
+}
