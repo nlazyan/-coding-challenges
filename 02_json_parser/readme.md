@@ -6,3 +6,12 @@ Parsing is often broken up into two stages: lexical analysis and syntactic analy
 
 I use JavaScript.
 
+# Usage
+
+Use files from /tests for testing.
+To use the program
+
+```
+node jsonParser.js [testFilename]
+```
+
