@@ -5,8 +5,8 @@ var fileContent = "";
 
 if(fileName) {
     fileContent = fs.readFileSync(fileName).toString();
-    let json = JSON.parse(fileContent)
-    console.log("json: ", json)
+    //let json = JSON.parse(fileContent)
+    //console.log("json: ", json)
     parseJSON(fileContent);
 }
 
@@ -60,6 +60,10 @@ function parseAllTypes(content) {
             json.push(checkForBool(item));
         } else if(checkForNumber(item)) {
             json.push(checkForNumber(item));
+        } else if(checkForNull(item)) {
+            json.push(checkForNull(item));
+        } else {
+            return `Invalid JSON around ${item}`;
         }
     }
     if(json) { return json } 
@@ -87,6 +91,14 @@ function checkForBool(content) {
 function checkForNumber(content) {
     let items = content.split(':');
     if(checkForString(items[0]) && Number(items[1])) {
+        return content;
+    }
+    return false;
+}
+
+function checkForNull(content) {
+    let items = content.split(':');
+    if(checkForString(items[0]) && items[1] === "null") {
         return content;
     }
     return false;
