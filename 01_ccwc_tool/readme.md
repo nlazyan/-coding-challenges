@@ -24,20 +24,23 @@ or without option
 ```
 ccwc [filename]
 ```
-To read from standard input if no filename is specified
-```
-cat test.txt | ccwc -l
-```
-Example 
+You can read from standard input if no filename is specified
+
+# Example
+Use CLI command with option 
 ```
 ccwc -l test.txt
+```
+read from standard input
+```
+cat test.txt | ccwc -l
 ```
 or do this
 ```
 node ccwc.js -l test.txt
 ```
 
-Options
+# Options
 
 -c &nbsp; number of bytes in a file  
 -l &emsp;number of lines in a file  
