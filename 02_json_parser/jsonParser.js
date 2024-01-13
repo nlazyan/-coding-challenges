@@ -45,10 +45,8 @@ function parseStringKeyValue(content) {
         let json = items[0].split('"')[1] + ": '"
 + items[1].split('"')[1];
         return json;
-    } else {
-        console.log("Invalid JSON around: ", items);
-        return;
-    }
+    } 
+        return false;
 }
 
 // step 3
@@ -60,6 +58,8 @@ function parseAllTypes(content) {
             json.push(parseStringKeyValue(item));
         } else if(checkForBool(item)) {
             json.push(checkForBool(item));
+        } else if(checkForNumber(item)) {
+            json.push(checkForNumber(item));
         }
     }
     if(json) { return json } 
@@ -79,8 +79,15 @@ function checkForBool(content) {
    let items = content.split(':')
    if(checkForString(items[0]) && (items[1] == "true" || items[1] == "false")) {
         let json = items[0].split('"')[1] + ": " + items[1];
-        console.log("bool ", json)
         return json;
+    }
+    return false;
+}
+
+function checkForNumber(content) {
+    let items = content.split(':');
+    if(checkForString(items[0]) && Number(items[1])) {
+        return content;
     }
     return false;
 }
