@@ -7,23 +7,23 @@ if(fileName) {
     fileContent = fs.readFileSync(fileName).toString();
     //let json = JSON.parse(fileContent)
     //console.log("json: ", json)
-    parseJSON(fileContent);
+    console.log("JSON parse: ", parseJSON(fileContent));
 }
 
 function parseJSON(fileContent) {
+    console.log("parse json ", fileContent)
     fileContent = fileContent.replaceAll(/\s/g,'');
     let firstChar = fileContent.charAt(0);
     let lastChar = fileContent.charAt(fileContent.length - 1);
-    //console.log(firstChar, lastChar)
     let json = parseSimpleJSON(fileContent);
     if(json) {
-        console.log("simple JSON", json)
         process.exit(0);
     } 
     if(firstChar === '{' && lastChar === '}') {
         let jsonContent = fileContent.slice(1, fileContent.length - 1)
         json = parseAllTypes(jsonContent); //parseStringKeyValue(jsonContent);
         console.log("Step2 JSON of string key/value", json)
+        return json;
         process.exit(0);
     }else {
         console.log("Invalid JSON")
@@ -55,14 +55,24 @@ function parseAllTypes(content) {
     let json = [];
     for(let item of items) {
         if(parseStringKeyValue(item)) {
+            console.log("STRING")
             json.push(parseStringKeyValue(item));
         } else if(checkForBool(item)) {
+            console.log("BOOL")
             json.push(checkForBool(item));
         } else if(checkForNumber(item)) {
+            console.log("NUMBER")
             json.push(checkForNumber(item));
         } else if(checkForNull(item)) {
+            console.log("NULL")
             json.push(checkForNull(item));
-        } else {
+        } else if(checkForArray(item)) {
+            console.log("ARRAY")
+            json.push(checkForArray(item));
+        } else if(checkForObject(item)) {
+            console.log("OBJECT")
+            json.push( checkForObject(item));
+        }else {
             return `Invalid JSON around ${item}`;
         }
     }
@@ -103,3 +113,25 @@ function checkForNull(content) {
     }
     return false;
 }
+
+// Step 4
+function checkForArray(content) {
+    let items = content.split(':');
+    if(checkForString(items[0]) && Array.isArray(items[1])) {
+        //console.log("ARRAY: ", items[1])
+        return content; 
+    }   
+    return false;
+}
+
+function checkForObject(content) {
+    let contentArr = content.split(':'); 
+    let items = [];
+    items[0] = contentArr.shift();
+    items[1] = contentArr.join(":")
+    if(parseJSON(items[1])) {
+        console.log("OBJECT ",content)
+        return content
+    }   
+    return false;
+} 
