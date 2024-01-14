@@ -1,41 +1,53 @@
 # Coding Challenge 1 - Word Counter
 
-# Usage
-
-Make the command executable
+# Development setup
+1. Clone repository
+```
+git clone https://github.com/nlazyan/coding-challenges.git
+cd "01_ccwc_tool"
+```
+2. Make the command executable
  
 ```
 chmod +x ccwc.js
 ```
 
-Install a package and any packages that it depends
+3. Install a package and any packages that it depends
 ```
 npm install
 ```
-Create a 'symbolic link' by using this npm CLI command
+4. Create a 'symbolic link' by using this npm CLI command
 ```
 npm link
 ```
-Usage. Now you can use the ccwc command with or without options.
+5. Build and Run with nodejs
 ```
-ccwc [options] [filename]
+node ccwc.js [option] [filename]
 ```
-or without option
+# Usage
+1. Use the ccwc command with option
+```
+ccwc [option] [filename]
+```
+2. or without option
 ```
 ccwc [filename]
 ```
-You can read from standard input if no filename is specified
-
-# Example
-Use CLI command with option 
+3. Run with nodejs
 ```
-ccwc -l test.txt
+node ccwc.js [option] [filename]
 ```
-read from standard input
+4. You can read from standard input if no filename is specified
 ```
 cat test.txt | ccwc -l
 ```
-or do this
+# Example
+1. Run using CLI command (with or without option) 
+```
+ccwc -l test.txt
+```
+
+2. Run with nodejs
 ```
 node ccwc.js -l test.txt
 ```
