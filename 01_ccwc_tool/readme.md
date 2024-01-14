@@ -4,7 +4,7 @@
 1. Clone repository
 ```
 git clone https://github.com/nlazyan/coding-challenges.git
-cd "01_ccwc_tool"
+cd ./coding-challenges/01_ccwc_tool
 ```
 2. Make the command executable
  
@@ -18,7 +18,7 @@ npm install
 ```
 4. Create a 'symbolic link' by using this npm CLI command
 ```
-npm link
+sudo npm link
 ```
 5. Build and Run with nodejs
 ```
