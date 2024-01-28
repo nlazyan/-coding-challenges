@@ -57,22 +57,69 @@ class JsonParser {
     parse_string() {
         if(this.s[this.i] === '"') {
             let result = "";
-            let i = 2;
+            this.i += 1;
             this.skip_whitespace();
-            
-            while(this.s[i] !== '"') {
+            while(this.s[this.i] !== '"') {
                 if(this.i > this.s.length) {
                     return this.JsonException("Invalid JSON: Excpect string");
                 }
-                result += this.s[i];
-                i++
+                result += this.s[this.i];
+                this.i += 1
             }
-            this.i = i + 1;
+            this.i += 1;
             return result;
         }
     }
+    parse_array() {
+        return;
+    }
+    parse_number() {
+        return false;
+    }
+    parse_bool() {
+        let bool;
+        if(this.s[this.i] === 't') {
+            bool = 'true'
+        }else {
+            if(this.s[this.i] === 'f') {
+                bool = 'false';
+            }
+        }
+        if(!bool) return;
+        if(this.s.substr(this.i, bool.length) === bool) {
+            this.i += bool.length;
+            return bool;
+        }
+        return;
+    }
+    parse_null() {
+        let nullValue = 'null';
+        if(this.s.substr(this.i, nullValue.length) === nullValue) {
+            this.i += nullValue.length;
+            return nullValue;
+        }
+        return;
+    }
+
     parse_value() {
         let result = this.parse_string();
+        if(!result) {
+            result = this.parse_number();            
+        }
+        if(!result) {
+            result = this.parse_object();
+        }
+        if(!result) {
+            result = this.parse_array();
+        }
+        if(!result) {
+            result = this.parse_bool();
+        }
+        if(!result) {
+            result = this.parse_null();
+        }
+        return result;
+
         return result;
     }
 
@@ -87,9 +134,9 @@ var fileName = process.argv[2];
 var fileContent = "";
 
 let jp = new JsonParser();
-jp.s = '{"n": "ona"}';
+jp.s = '{"n": null, "key":"value"}';
 if(fileName) {
     fileContent = fs.readFileSync(fileName).toString();
     jp.s = fileContent;
 }
-console.log("starting with class", jp.parse_object())
+console.log("starting with class", jp.parse_value())
