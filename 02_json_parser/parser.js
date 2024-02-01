@@ -30,25 +30,28 @@ class JsonParser {
             let result = {};
             let initial = true;
 
-            let i = this.i;
-            while(this.s[i] !== "}") {
-                this.i = i;
+            while(this.s[this.i] !== "}") {
                 if(!initial) {
                     this.skip_whitespace();
                     this.process_comma();
                     this.skip_whitespace();
                 }
                 let key = this.parse_string();
+                if(!key ) {
+                    return this.JsonException("Invalid JSON: Excpect key to be string");
+                }
                 this.skip_whitespace();
                 this.process_colon();
                 this.skip_whitespace();
                 let value = this.parse_value();
-                result[key] = value;
+                if(!value[1]) {
+                    return value[0];
+                }
+                result[key] = value[0];
                 this.skip_whitespace();
                 initial = false;
-                i += 1;
             }
-            this.i = i;
+            //this.i += 1;
             this.depth -=1;
             return result;
         }
@@ -61,12 +64,13 @@ class JsonParser {
             this.skip_whitespace();
             while(this.s[this.i] !== '"') {
                 if(this.i > this.s.length) {
-                    return this.JsonException("Invalid JSON: Excpect string");
+                    return this.JsonException("this Invalid JSON: Excpect string");
                 }
                 result += this.s[this.i];
                 this.i += 1
             }
             this.i += 1;
+            this.skip_whitespace();
             return result;
         }
     }
@@ -118,9 +122,11 @@ class JsonParser {
         if(!result) {
             result = this.parse_null();
         }
-        return result;
-
-        return result;
+        if(!result) {
+            result = this.JsonException("Invalid value");
+            return [result, false]
+        }
+        return [result, true];
     }
 
     JsonException(errorMessage) {
@@ -139,4 +145,4 @@ if(fileName) {
     fileContent = fs.readFileSync(fileName).toString();
     jp.s = fileContent;
 }
-console.log("starting with class", jp.parse_value())
+console.log("JSON: ", jp.parse_object())
