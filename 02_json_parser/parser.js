@@ -38,7 +38,7 @@ class JsonParser {
                 }
                 let key = this.parse_string();
                 if(!key ) {
-                    return this.JsonException("Invalid JSON: Excpect key to be string");
+                    return;
                 }
                 this.skip_whitespace();
                 this.process_colon();
@@ -54,7 +54,8 @@ class JsonParser {
             //this.i += 1;
             this.depth -=1;
             return result;
-        }
+        } else return this.JsonException(`Unexpected end of JSON input at
+        position ${this.i}`);
     }
 
     parse_string() {
@@ -78,7 +79,14 @@ class JsonParser {
         return;
     }
     parse_number() {
-        return false;
+        let start = this.i;
+        while(!isNaN(this.s[this.i]) && !isNaN(parseFloat(this.s[this.i]))) {
+            this.i += 1;
+        }
+        if(this.i > start) {
+            return this.s.substring(start, this.i)
+        }
+        return;
     }
     parse_bool() {
         let bool;
@@ -123,7 +131,7 @@ class JsonParser {
             result = this.parse_null();
         }
         if(!result) {
-            result = this.JsonException("Invalid value");
+            result = this.JsonException(`Invalid value at position ${this.i}`);
             return [result, false]
         }
         return [result, true];
@@ -131,6 +139,16 @@ class JsonParser {
 
     JsonException(errorMessage) {
         return `Error: ${errorMessage}`;
+    }
+
+    parseJSON() {
+    let str = this.parse_object();
+        if(str) {
+            return str;
+        } else {
+            return this.JsonException(`SyntaxError: Expected double-quoted
+                property name in JSON at position ${this.i}`);
+        }
     }
 
 }
