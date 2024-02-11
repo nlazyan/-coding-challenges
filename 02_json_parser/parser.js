@@ -18,7 +18,7 @@ class JsonParser {
     }
     process_comma() {
         if(this.s[this.i] !== ",") {
-            return this.JsonException("Invalid JSON: Expecte ','");
+            return false; //this.JsonException("Invalid JSON: Expecte ','");
         }
         this.i += 1;
     }
@@ -51,11 +51,12 @@ class JsonParser {
                 this.skip_whitespace();
                 initial = false;
             }
-            //this.i += 1;
+            this.i += 1;
             this.depth -=1;
             return result;
-        } else return this.JsonException(`Unexpected end of JSON input at
-        position ${this.i}`);
+        } else return false; 
+        //this.JsonException(`Unexpected end of JSON input at
+        //position ${this.i}, ${this.s[this.i]}`);
     }
 
     parse_string() {
@@ -76,6 +77,27 @@ class JsonParser {
         }
     }
     parse_array() {
+        if(this.s[this.i] === "[") {
+            let result = [];
+            this.i += 1;
+            while(this.s[this.i] !== "]") {
+                let value = this.parse_value();
+                if(value[1]) {
+                    result.push(value[0]);
+                    this.i += 1;
+                    this.skip_whitespace();
+                } else {return result}
+                let comma = this.process_comma();
+                if(comma) {
+                    value = this.parse_value();
+                    if(!value) {
+                        return false;
+                    } else { this.skip_whitespace(); reult.push(value)}
+                }
+            }
+            this.i += 1;
+            return result;
+        }
         return;
     }
     parse_number() {
@@ -121,7 +143,7 @@ class JsonParser {
         if(!result) {
             result = this.parse_object();
         }
-        if(!result) {
+        if(result === 'undefined' || result == false) {
             result = this.parse_array();
         }
         if(!result) {
@@ -131,7 +153,7 @@ class JsonParser {
             result = this.parse_null();
         }
         if(!result) {
-            result = this.JsonException(`Invalid value at position ${this.i}`);
+            result = this.JsonException(`Invalid value at position ${this.i}, ${this.s[this.i]}`);
             return [result, false]
         }
         return [result, true];
@@ -163,4 +185,4 @@ if(fileName) {
     fileContent = fs.readFileSync(fileName).toString();
     jp.s = fileContent;
 }
-console.log("JSON: ", jp.parse_object())
+console.log("JSON: ", jp.parseJSON())
