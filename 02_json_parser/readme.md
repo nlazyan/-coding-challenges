@@ -12,6 +12,6 @@ Use files from /tests for testing.
 To use the program
 
 ```
-node jsonParser.js [testFilename]
+node parser.js [testFilename]
 ```
 
