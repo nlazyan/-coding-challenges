@@ -143,7 +143,7 @@ class JsonParser {
         if(!result) {
             result = this.parse_object();
         }
-        if(result === 'undefined' || result == false) {
+        if(result === 'undefined' || result === false) {
             result = this.parse_array();
         }
         if(!result) {
@@ -153,7 +153,8 @@ class JsonParser {
             result = this.parse_null();
         }
         if(!result) {
-            result = this.JsonException(`Invalid value at position ${this.i}, ${this.s[this.i]}`);
+            result = this.JsonException(`Invalid value at position ${this.i} \n
+            ${this.s} \n ${this.s[this.i]}`);
             return [result, false]
         }
         return [result, true];
