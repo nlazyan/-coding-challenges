@@ -86,6 +86,49 @@ class LetterTree {
   }
 }
 
+class huffBaseNode {
+    constructor(value=null, l=null, r=null) {
+        this.value = value;
+        this.left = l;
+        this.right = r;
+    }
+    weight() {}
+    isLeaf() {}
+}
+
+class huffTree {
+    constructor(data) {
+        this.data = data;
+        this.root = null;
+    }
+    compare(a, b) {
+        if(a <= b) {
+            return 1;
+        }
+        return 0;
+    }
+    buildTree(data) {
+        if(data.length <=1) return;
+        let tmp1 = data.shift();
+        let tmp2 = data.shift();
+        let tmp = tmp1.value + tmp2.value;
+        this.root = new huffBaseNode(tmp, tmp1, tmp2);
+        data.push(this.root);
+        data.sort((a,b) => a.value - b.value);
+        if (this.compare(tmp1.value, tmp2.value)) {
+            this.root.left = tmp1;
+            this.root.right = tmp2;
+        } else {
+            this.root.left = tmp2;
+            this.root.right = tmp1;
+        }
+        this.buildTree(data);
+    }
+    weight() {
+        return this.root;
+    }
+
+}
 const file = process.argv[2];
 try {
   if (fs.existsSync( file )) {
@@ -114,6 +157,8 @@ fs.readFile(file, 'utf8', (err, data) => {
     //console.log("frequency ", lTree.preorder(lTree.root));
   })
   lTree.preorder(lTree.root);
-  console.table(lTree.nodeTable(lTree.root))
-  //console.log("letter ", lTree.depth(lTree.root), lTree);
+  let treeData = lTree.nodeTable(lTree.root);
+  let huff = new huffTree(treeData);
+  huff.buildTree(treeData);
+  console.log(huff.weight());
 });
