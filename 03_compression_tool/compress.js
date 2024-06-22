@@ -68,29 +68,31 @@ class LetterTree {
   preorder(node) {
     if(node !== null) {
       if (this.lines == 0) {
-        //console.log("  letter | frequency");
       }
       this.lines = this.lines + 1;
       if (this.lines >=20) {
         this.lines = 0;
       }
-      //console.log('   ', node.value, "   |   ", node.frequency);
       this.table.push({letter: node.value, value: node.frequency});
       this.preorder(node.left);
       this.preorder(node.right);
     }
   }
-  nodeTable(node) {
+  getCharTable(node) {
+    this.table  = this.table.filter(a => a.letter != '\n')
     let sorted = this.table.sort((a,b) => a.value - b.value);
     return this.table;
   }
 }
 
 class huffBaseNode {
-    constructor(value=null, l=null, r=null) {
+    constructor(value=null, l=null, r=null, char='') {
         this.value = value;
         this.left = l;
         this.right = r;
+        if(char) {
+            this.letter = char;
+        }
     }
     weight() {}
     isLeaf() {}
@@ -100,6 +102,7 @@ class huffTree {
     constructor(data) {
         this.data = data;
         this.root = null;
+        this.prefix_table = [];
     }
     compare(a, b) {
         if(a <= b) {
@@ -112,7 +115,7 @@ class huffTree {
         let tmp1 = data.shift();
         let tmp2 = data.shift();
         let tmp = tmp1.value + tmp2.value;
-        this.root = new huffBaseNode(tmp, tmp1, tmp2);
+        this.root = new huffBaseNode(tmp, tmp1, tmp2, data.letter);
         data.push(this.root);
         data.sort((a,b) => a.value - b.value);
         if (this.compare(tmp1.value, tmp2.value)) {
@@ -123,6 +126,28 @@ class huffTree {
             this.root.right = tmp1;
         }
         this.buildTree(data);
+    }
+    huffFindPrefixCode(node, letter, charCode = '') {
+        if(!node) return null;
+        if(!node.left && !node.right && node.letter) {
+            if(letter && node.letter === letter) {
+                return charCode;
+            }
+            if (node.letter) {
+                this.prefix_table.push({ "Char": node.letter, "Freq":
+                node.value, "Code": charCode });
+            }
+        }
+        let leftResult = this.huffFindPrefixCode(node.left, letter, charCode+'0');
+        if (letter && leftResult) return leftResult;
+        let rightResult = this.huffFindPrefixCode(node.right, letter, charCode+'1');
+        if (letter && rightResult) return rightResult;
+    }
+    getCharCode(letter) {
+        return this.huffFindPrefixCode(this.root, letter)
+    }
+    getPrefixTable() {
+        return this.prefix_table;;
     }
     weight() {
         return this.root;
@@ -150,15 +175,17 @@ fs.readFile(file, 'utf8', (err, data) => {
     return;
   }
   const dataArray = data.split("");
-  //var charFrequency
   let lTree = new LetterTree();
   dataArray.forEach(letter => {
     lTree.insert(letter);
-    //console.log("frequency ", lTree.preorder(lTree.root));
   })
   lTree.preorder(lTree.root);
-  let treeData = lTree.nodeTable(lTree.root);
-  let huff = new huffTree(treeData);
-  huff.buildTree(treeData);
-  console.log(huff.weight());
+  let charData = lTree.getCharTable(lTree.root);
+  console.table(charData)
+  let huff = new huffTree(charData);
+  huff.buildTree(charData);
+  let root = huff.weight();
+  huff.huffFindPrefixCode(root)
+  let result = huff.getPrefixTable();
+  console.table(result);
 });
